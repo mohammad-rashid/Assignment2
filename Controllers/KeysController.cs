@@ -1,6 +1,7 @@
 ﻿using KeyValueIoT.Data;
 using KeyValueIoT.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -60,9 +61,6 @@ namespace KeyValueIoT.Controllers
         [HttpPatch("{key}/{value}")]
         public IActionResult Patch(string key, string value)
         {
-            var inputData = new KeyValueModel();
-            inputData.Key = key;
-            inputData.Value = value;
             var keyvalueFromDb = _repository.KeyValueRepo.Find(key);
             if (keyvalueFromDb == null)
             {
@@ -70,7 +68,7 @@ namespace KeyValueIoT.Controllers
             }
             try
             {
-                _repository.KeyValueRepo.Update(inputData);
+                keyvalueFromDb.Value = value;
                 _repository.SaveChanges();
                 return Ok();
             }
